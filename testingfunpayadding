@@ -1,0 +1,44 @@
+import logging
+import os
+
+logger = logging.getLogger(f"FPC.{__name__}")
+
+PREFIX = '[Test Plugin]'
+PLUGIN_FOLDER = f"storage/plugins/test-uuid-1234/"
+
+def log(msg):
+    logger.info(f"{PREFIX} {msg}")
+
+NAME = "Test Plugin"
+VERSION = "0.0.1"
+DESCRIPTION = "Тестовый плагин для проверки загрузки"
+UUID = "324-2235-2342-1238"
+SETTINGS_PAGE = False
+CREDITS = "@tester"
+
+def init_plugin(cardinal, *args):
+    """Инициализирует тестовый плагин"""
+    log("Тестовый плагин инициализируется")
+    # Создаем папку для плагина, если ее нет
+    if not os.path.exists(PLUGIN_FOLDER):
+        os.makedirs(PLUGIN_FOLDER)
+        log(f"Создана папка для плагина: {PLUGIN_FOLDER}")
+    
+    # Регистрируем команды
+    cardinal.add_telegram_commands(UUID, [
+        ("testplugin", "🧪 Тестовый плагин", True)
+    ])
+    
+    @cardinal.telegram.bot.message_handler(commands=["testplugin"])
+    def test_cmd(m):
+        m.bot.send_message(m.chat.id, "Тестовый плагин работает!")
+        log(f"Команда testplugin выполнена для чата {m.chat.id}")
+    
+    log("Тестовый плагин успешно инициализирован")
+
+log("Тестовый плагин загружен")
+
+BIND_TO_PRE_INIT = [init_plugin]
+BIND_TO_NEW_MESSAGE = []
+BIND_TO_INIT = []
+BIND_TO_DELETE = [] 
